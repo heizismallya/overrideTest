@@ -1,0 +1,118 @@
+#include <iostream>
+#include <vector>
+using namespace std;
+
+class Command
+{
+public:
+	virtual void undo() = 0;
+	virtual void redo() = 0;
+};
+
+
+class ChildCommand1 : public Command
+{
+public:
+	//ChildCommand1()
+	//{
+	//	count = 0;
+	//}
+	void undo()
+	{
+		cout << "ChildCommand1 undo " << endl;
+	}
+
+	void redo()
+	{
+		cout << "ChildCommand1 redo  "  << endl;
+	}
+};
+
+class ChildCommand2 : public Command
+{
+public:
+	void undo()
+	{
+		cout << "ChildCommand2 undo " << endl;
+	}
+
+	void redo()
+	{
+		cout << "ChildCommand2 redo " << endl;
+	}
+};
+
+class CommandStack
+{
+public:
+	vector<Command*> commandsUndo;
+	vector<Command*> commandsRedo;
+
+	void addCommand(Command* cusCommand)
+	{
+		commandsUndo.push_back(cusCommand);
+	}
+
+	void redoCommand()
+	{
+		if (commandsRedo.empty())
+		{
+			return;
+		}
+		else
+		{
+			Command* curCommand = commandsRedo.back();
+			curCommand->redo();
+			commandsRedo.pop_back();
+
+			//add to undo
+			commandsUndo.push_back(curCommand);
+			cout << "undo stash size is" << commandsUndo.size() << endl;
+			cout << "redo stash size is" << commandsRedo.size() << endl;
+
+		}
+	}
+
+	void undoCommand()
+	{
+		if (commandsUndo.empty())
+		{
+			return;
+		}
+		else
+		{
+			Command* curCommand = commandsUndo.back();
+			curCommand->undo();
+			commandsUndo.pop_back();
+
+			//add to undo
+			commandsRedo.push_back(curCommand);
+			cout << "undo stash size is" << commandsUndo.size() << endl;
+			cout << "redo stash size is" << commandsRedo.size() << endl;
+		}
+	}
+
+
+
+};
+
+int main()
+{
+	ChildCommand1* myCommand1 = new ChildCommand1();
+	
+	ChildCommand2* myCommand2 = new ChildCommand2();
+
+	CommandStack stash;
+	stash.addCommand(myCommand1);
+	stash.addCommand(myCommand2);
+
+	stash.undoCommand();
+	stash.undoCommand();
+
+	stash.redoCommand();
+	stash.redoCommand();
+
+
+	system("pause");
+	return 1;
+}
