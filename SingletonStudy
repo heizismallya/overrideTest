@@ -1,0 +1,38 @@
+#include <iostream>
+using namespace std;
+
+
+//！单例的运用场景就是为其他很多对象提供共享资源的访问方式，比如全局的配置文件读取
+class Singleton
+{
+public:
+	static Singleton* getInstance()
+	{
+		if (instance == nullptr)
+		{
+			instance = new Singleton();
+		}
+
+		return instance;
+	}
+
+private:
+	static Singleton* instance;
+private:
+	//这里，将构造函数私有化，不允许外部创建对象，与此同时，拷贝构造，“=”运算符重载一样被禁止
+	//没有人可以控制此对象的生命周期
+	Singleton()
+	{
+		cout << "new instance" << endl;
+	}
+};
+
+Singleton* Singleton::instance = nullptr;
+int main()
+{
+	Singleton* myInstance = Singleton::getInstance();
+}	//！无论调用多少次Singleton::getInstance()，返回的对象是唯一的
+	Singleton* myInstance1 = Singleton::getInstance();;
+	system("pause");
+	return 1;
+}
