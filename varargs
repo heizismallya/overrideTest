@@ -1,0 +1,37 @@
+#include "stdarg.h" //1
+
+QVariant MmfSet::readValueByKeys(int count, ...) //2
+{
+    //! get mmf set root
+    QString mmfName = MmfSet::getMmfInstance()->getCurMmfName();
+    QVariant root = MmfSet::getMmfInstance()->rootRead(mmfName);
+
+    //!define arg_ptr
+    va_list arg_ptr;                 //3
+
+    //! init arg_ptr
+    va_start(arg_ptr, count);        //4
+
+    QString key;
+    QVariant temp = root;
+    QVariantMap tempMap;
+    QVariant result;
+
+    for (int i = 0; i < count; i++)   //5
+    {
+        key = QString(QLatin1String(va_arg(arg_ptr, char*))); //!< using each member     //5
+
+        if (i == count - 1)
+        {
+            tempMap = temp.toMap();
+            result = tempMap.value(key);
+        }
+        else
+        {
+            temp = MmfSet::getMmfInstance()->childRead(key, temp);
+            continue;
+        }
+    }
+
+    return result;
+}
